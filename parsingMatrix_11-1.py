@@ -24,16 +24,6 @@ spacingType = 'uniform'
 slitLength = 100
 newSimulation = True
 
-testGrating = Grating(0,screen_length,numOfSlits,[])
-makeSlits(testGrating, slitLength, numOfPointSources)
-
-for i in range(0,len(testGrating.slits)):
-    makeSources(testGrating.slits[i],1,spacingType)
-
-observingPositions = np.linspace(0,1e7,100000)
-
-t0 = time.time()
-
 @jit('c8[:,:](f4,f4,f8[:],f8[:],f8[:])')
 def calcIntensitiesCUDA(x, waveNumber,y1Vals,y2Vals,y1Amps):
     
@@ -50,7 +40,7 @@ def calcIntensitiesCUDA(x, waveNumber,y1Vals,y2Vals,y1Amps):
     
     """ Break y1 and y2 into sections """
     """ Need to change this yourself """
-    numSections = 20
+    numSections = 10
     
     
     
@@ -145,13 +135,18 @@ def sendSumAndSendTo(datafile, theList, option):
         for item in theList:
             f.write("%s\n" % item)
 
-#t0 = time.time()
-y2Array, y1Array, y1Amps = processInputForJobs(testGrating,observingPositions,1)
-y2array = []
-for i in y2Array[0]:
-    y2array.append(i)
+testGrating = Grating(x=0, length=screen_length,numberOfSlits=numOfSlits,slitWidth=slitLength, sourcesPerSlit=numOfPointSources)
 
-checkIntensity = calcIntensitiesCUDA(screen_distance,wavenumber,y1Array,y2array,y1Amps)
+testSource = InitialSource(xPosition = -1e7, yPosition = .500e7, waveType = 'plane', initialAmplitude = 1.0)
+
+sourceAmps, _ = testSource.propogate(testGrating.x, testGrating.pointSourcePositions, wavenumber, normalize=True)
+
+testGrating.addAmplitudes(sourceAmps)
+observingPositions = np.linspace(0.475e7,0.525e7,1e4)
+
+t0 = time.time()
+
+checkIntensity = calcIntensitiesCUDA(screen_distance,wavenumber,testGrating.pointSourcePositions,observingPositions,testGrating.pointSourceAmplitudes)
 
 tf = time.time()
 
@@ -159,7 +154,6 @@ print(tf-t0)
 
 plt.figure(figsize=(15,8))
 plt.plot(observingPositions,checkIntensity,'r')
-plt.savefig('dottedProfile.png', transparent=True)
 plt.xlabel('Position on Observing Screen (microns)', fontsize = 25)
 plt.ylabel('Normalized Intensity', fontsize = 25)
 plt.title('Uniform Grating', fontsize = 30)
