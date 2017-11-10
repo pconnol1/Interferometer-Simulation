@@ -22,7 +22,7 @@ class InitialSource:
         will generate an array of amplitudes for each pointSourceY in pointSourceYs.
         """
         pointSourceYs = np.asarray(pointSourceYs)
-        ampValues = np.zeros_like(pointSourceYs, dtype=complex)
+        ampValues = np.zeros_like(pointSourceYs)
         ampPhases = np.zeros_like(pointSourceYs, dtype=complex)
         rValues = np.zeros_like(pointSourceYs)
         
@@ -35,19 +35,13 @@ class InitialSource:
         if self.waveType.lower() == 'spherical':
             
             for i in range(0, len(rValues)):
+                
                 r = np.sqrt((gratingX-self.xPosition)**2 + (pointSourceYs[i]-self.yPosition)**2)
                 ampValues[i] = (complexAmplitude(self.initialAmplitude, waveNum, r, 0)).real
                 ampPhases[i] = np.exp(1j*waveNum*r)
                 
             if normalize == True:
-                maxAmp = max(ampValues)
-                print(maxAmp)
+                maxAmp = np.amax(ampValues)
                 ampValues = [amp/maxAmp for amp in ampValues]
         
         return ampValues, ampPhases
-    
-testSource = InitialSource(1,0.0,'spherical',1.0)
-
-val = testSource.propogate(2,[-10,-5,0,5,10], 1, normalize=True)[0]
-
-print(val)
