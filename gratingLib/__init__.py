@@ -4,7 +4,4 @@ from .complexAmplitude import complexAmplitude
 from .Grating import Grating
 from .Slit import Slit
 from .PointSource import PointSource
-from .makeSlits import makeSlits
-from .makeSources import makeSources
-from .processInputForJobs import processInputForJobs
-from .retrieveResults import retrieveResults
+from .InitialSource import InitialSource
