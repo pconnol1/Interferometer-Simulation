@@ -29,7 +29,7 @@ class InitialSource:
         if self.waveType.lower() == 'plane':
             
             ampValues = np.ones_like(pointSourceYs)
-            ampPhases = np.zeros_like(pointSourceYs)
+            ampPhases = np.ones_like(pointSourceYs)
         
         
         if self.waveType.lower() == 'spherical':

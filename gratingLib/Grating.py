@@ -15,14 +15,16 @@ class Grating:
         self.slits = []
         self.pointSourcePositions = []
         self.pointSourceAmplitudes = []
+        self.pointSourcePhases = []
         
         # fill grating with slits, makeSlits also fills slits with point sources
         makeSlits(self, self.slitWidth, self.sourcesPerSlit, self.sourceSpacing)
         
-    def addAmplitudes(self, newAmplitudes):
+    def addAmplitudes(self, newAmplitudes, newPhases):
         # method takes an array of amplitudes, replaces point source amplitude array, and populates all slits and
         #  point sources with new amplitudes
         self.pointSourceAmplitudes = newAmplitudes
+        self.pointSourcePhases = newPhases
         
         for slit in self.slits:
             for source, newAmplitude in zip(slit.sources, newAmplitudes):
