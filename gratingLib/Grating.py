@@ -1,5 +1,6 @@
 from .Slit import Slit
 from .PointSource import PointSource
+from numpy import random
 
 class Grating:
     
